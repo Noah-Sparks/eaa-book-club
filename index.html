@@ -271,10 +271,7 @@
     line-height: 1.6;
     font-style: italic;
     margin-bottom: 16px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    display: block;
   }
 
   .book-footer {
@@ -549,7 +546,12 @@ function toggleLike(idx) {
   if (likes[key]) { delete likes[key]; }
   else { likes[key] = true; }
   saveLikes(likes);
-  renderBooks(currentFilter);
+  // Update just the button instead of re-rendering the whole grid
+  const btn = document.querySelector(`[data-like-idx="${idx}"]`);
+  if (btn) {
+    btn.classList.toggle('liked', !!likes[key]);
+    btn.innerHTML = likes[key] ? '♥' : '♡';
+  }
 }
 
 function getCoverUrl(book) {
@@ -625,8 +627,8 @@ function renderBooks(filter) {
           ${book.note ? `<div class="book-note">"${book.note}"</div>` : ''}
           <div class="book-footer">
             <div class="book-rec">Rec'd by ${recByStr}</div>
-            <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike(${idx})">
-              <span class="heart">${liked ? '♥' : '♡'}</span>
+            <button class="like-btn ${liked ? 'liked' : ''}" data-like-idx="${idx}" onclick="toggleLike(${idx})">
+              ${liked ? '♥' : '♡'}
             </button>
           </div>
         </div>
